@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+{% block body %}
+<section class="hero">
+  <p class="kicker">مدیریت HAProxy</p>
+  <h1>مسیرهای اتصال</h1>
+  <div class="summary"><bdi>{{ domain }}:443</bdi><span>{{ routes|length }} مسیر ثبت‌شده</span></div>
+</section>
+{% for category, message in get_flashed_messages(with_categories=true) %}
+<p class="message {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
+{% endfor %}
+<section class="card" id="route-form">
+  <h2>{{ 'ویرایش مسیر' if editing else 'افزودن مسیر' }}</h2>
+  <form method="post" action="{{ url_for('change') }}" class="route-form">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input type="hidden" name="revision" value="{{ revision }}">
+    <input type="hidden" name="action" value="{{ 'edit' if editing else 'add' }}">
+    {% if editing %}<input type="hidden" name="old_path" value="{{ editing.path }}">{% endif %}
+    <label>مسیر<input name="path" dir="ltr" maxlength="120" value="{{ editing.path if editing else '' }}" placeholder="/s2" required></label>
+    <label>نشانی نود مقصد<input name="host" dir="ltr" maxlength="253" value="{{ editing.host if editing else '' }}" placeholder="node.example.com" required></label>
+    <label>پورت مقصد<input name="port" type="number" dir="ltr" min="1" max="65535" value="{{ editing.port if editing else 8080 }}" required></label>
+    <button type="submit">{{ 'ذخیره و اعمال' if editing else 'افزودن و اعمال' }}</button>
+    {% if editing %}<a href="{{ url_for('index') }}">انصراف</a>{% endif %}
+  </form>
+</section>
+<section class="card">
+  <h2>مقصدها</h2>
+  {% if routes %}
+  <ul class="routes">
+  {% for route in routes %}
+    <li>
+      <bdi class="path">{{ route.path }}</bdi>
+      <bdi class="destination">{{ route.host }}:{{ route.port }}</bdi>
+      <div class="actions">
+        <a class="quiet" href="{{ url_for('index', edit=route.path, _anchor='route-form') }}">ویرایش</a>
+        <details>
+          <summary class="quiet danger">حذف</summary>
+          <form method="post" action="{{ url_for('change') }}">
+            <input type="hidden" name="csrf" value="{{ csrf }}">
+            <input type="hidden" name="revision" value="{{ revision }}">
+            <input type="hidden" name="action" value="delete">
+            <input type="hidden" name="old_path" value="{{ route.path }}">
+            <button class="danger quiet" type="submit">تأیید حذف {{ route.path }}</button>
+          </form>
+        </details>
+      </div>
+    </li>
+  {% endfor %}
+  </ul>
+  {% else %}<p class="muted">هنوز مسیری ثبت نشده است. نشانی نود پاسارگارد و پورت ورودی آن را در فرم بالا وارد کنید.</p>{% endif %}
+</section>
+{% endblock %}

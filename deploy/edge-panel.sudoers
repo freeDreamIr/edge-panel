@@ -1,0 +1,1 @@
+edge-panel ALL=(root) NOPASSWD: /usr/local/sbin/edge-panel-apply ""

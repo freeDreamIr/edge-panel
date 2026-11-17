@@ -1,0 +1,20 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+base=/etc/edge-panel
+[[ $# -eq 1 && $1 == /etc/letsencrypt/live/edge-panel ]]
+exec 9>"$base/apply.lock"
+flock 9
+pem=$(mktemp "$base/.pem.XXXXXXXX")
+trap 'rm -f "$pem"' EXIT
+cat "$1/fullchain.pem" "$1/privkey.pem" > "$pem"
+openssl x509 -in "$pem" -noout -checkend 0
+previous="$base/edge.previous.pem"
+rm -f "$previous"
+if [[ -f $base/edge.pem ]]; then cp -p "$base/edge.pem" "$previous"; fi
+mv -f "$pem" "$base/edge.pem"
+if systemctl is-active --quiet edge-haproxy && ! systemctl reload edge-haproxy; then
+  if [[ -f $previous ]]; then mv -f "$previous" "$base/edge.pem"; fi
+  exit 1
+fi
+rm -f "$previous"

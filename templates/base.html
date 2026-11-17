@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>{% block title %}پنل مدیریت مسیرها{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='panel.css') }}">
+</head>
+<body>
+  <header><div class="wrap bar">
+    <a class="brand" href="{{ url_for('index') }}"><span class="mark" aria-hidden="true">E</span> Edge Panel</a>
+    {% if session.signed_in %}
+    <form method="post" action="{{ url_for('logout') }}">
+      <input type="hidden" name="csrf" value="{{ csrf }}">
+      <button class="quiet" type="submit">خروج</button>
+    </form>
+    {% endif %}
+  </div></header>
+  <main class="wrap">{% block body %}{% endblock %}</main>
+</body>
+</html>

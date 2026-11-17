@@ -1,0 +1,15 @@
+[Unit]
+Description=HAProxy for Edge Panel
+After=network-online.target nginx.service
+Wants=network-online.target
+
+[Service]
+Type=notify
+ExecStart=/usr/sbin/haproxy -Ws -f /etc/edge-panel/haproxy.cfg
+ExecReload=/usr/sbin/haproxy -c -q -f /etc/edge-panel/haproxy.cfg
+ExecReload=/bin/kill -USR2 $MAINPID
+KillMode=mixed
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

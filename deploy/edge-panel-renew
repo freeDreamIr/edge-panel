@@ -1,0 +1,5 @@
+#!/bin/sh
+set -eu
+if [ "${RENEWED_LINEAGE:-}" = /etc/letsencrypt/live/edge-panel ]; then
+    exec /usr/local/sbin/edge-panel-cert "$RENEWED_LINEAGE"
+fi

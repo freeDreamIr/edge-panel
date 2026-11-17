@@ -1,0 +1,20 @@
+name: Ubuntu checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  smoke:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          sudo apt-get update
+          sudo apt-get install -y haproxy python3-flask
+      - run: |
+          bash -n install.sh
+          bash -n deploy/edge-panel-cert
+          sh -n deploy/edge-panel-apply
+          sh -n deploy/edge-panel-renew
+          sudo visudo -cf deploy/edge-panel.sudoers
+      - run: /usr/bin/python3 tests/panel_smoke.py
+      - run: sudo /usr/bin/python3 tests/proxy_smoke.py
