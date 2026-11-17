@@ -8,7 +8,7 @@ import sys
 import tempfile
 
 from edge_config import render
-from site_content import PAGES, page_html
+from site_content import PAGES, publish_page
 
 BASE = Path("/etc/edge-panel")
 LIVE = BASE / "haproxy.cfg"
@@ -68,13 +68,10 @@ def apply(payload):
             print(run("/usr/bin/openssl", "x509", "-in", str(BASE / "edge.pem"), "-noout", "-dates"))
         elif operation == "save_page":
             page = payload["page"]
-            html = page_html(page, payload["title"], payload["body"])
+            if not isinstance(page, str) or page not in PAGES:
+                raise ValueError("صفحه معتبر نیست.")
             destination = Path("/var/www/edge-panel") / PAGES[page]
-            pending = temporary_config(html.encode(), destination.parent)
-            try:
-                os.replace(pending, destination)
-            finally:
-                pending.unlink(missing_ok=True)
+            publish_page(destination, page, payload["title"], payload["body"])
         else:
             raise ValueError("عملیات مجاز نیست.")
 

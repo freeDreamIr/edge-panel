@@ -60,13 +60,16 @@ fi
 apt-get update
 apt-get install -y nginx haproxy certbot python3-flask gunicorn sudo
 id edge-panel >/dev/null 2>&1 || useradd --system --user-group --no-create-home --shell /usr/sbin/nologin edge-panel
-install -d -m 755 "$base" /opt/edge-panel /opt/edge-panel/templates /opt/edge-panel/static /var/www/edge-panel /var/www/edge-acme
+install -d -m 755 "$base" /opt/edge-panel /opt/edge-panel/templates /opt/edge-panel/static /var/www/edge-panel /var/www/edge-panel/assets /var/www/edge-acme
 install -m 644 app.py edge_config.py apply_routes.py site_content.py /opt/edge-panel/
 install -m 644 templates/*.html /opt/edge-panel/templates/
 install -m 644 static/*.css /opt/edge-panel/static/
-for page in web/*.html; do
-  [[ -f /var/www/edge-panel/${page##*/} ]] || install -m 644 "$page" /var/www/edge-panel/
-done
+install -m 644 web/assets/* /var/www/edge-panel/assets/
+flock "$base/apply.lock" /usr/bin/python3 - <<'PY'
+from pathlib import Path
+from site_content import install_pages
+install_pages(Path("/var/www/edge-panel"), Path("web"))
+PY
 install -m 644 deploy/panel-proxy.conf "$base/panel-proxy.conf"
 install -m 644 deploy/*.service /etc/systemd/system/
 install -m 755 deploy/edge-panel-apply deploy/edge-panel-cert /usr/local/sbin/

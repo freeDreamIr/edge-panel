@@ -25,6 +25,8 @@ def validate_routes(routes):
             raise ValueError("مسیر باید با / شروع شود و فقط حروف لاتین، عدد، خط تیره یا زیرخط داشته باشد.")
         if path == "/edge-panel" or path.startswith("/edge-panel/"):
             raise ValueError("مسیر /edge-panel برای پنل مدیریت رزرو شده است.")
+        if path == "/_edge-site" or path.startswith("/_edge-site/"):
+            raise ValueError("مسیر /_edge-site برای فایل‌های سایت عمومی رزرو شده است.")
         if path in seen:
             raise ValueError("این مسیر قبلاً ثبت شده است.")
         seen.add(path)

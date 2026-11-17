@@ -11,7 +11,7 @@ from werkzeug.security import generate_password_hash
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from edge_config import render
-from site_content import page_html, read_page
+from site_content import install_pages, page_html, read_page
 
 BASE = "http://127.0.0.1:15001"
 
@@ -34,6 +34,13 @@ with tempfile.TemporaryDirectory() as temporary:
     api = Path(temporary) / "api.html"
     assert "&lt;script&gt;" in api.read_text(encoding="utf-8")
     assert read_page(api, "api")["body"] == "<script>test</script>"
+    stock = Path(__file__).resolve().parents[1] / "web"
+    home = Path(temporary) / "index.html"
+    home.write_bytes((stock / "index.html").read_bytes())
+    install_pages(Path(temporary), stock)
+    assert read_page(api, "api")["body"] == "<script>test</script>"
+    assert 'lang="fa" dir="rtl"' in home.read_text(encoding="utf-8")
+    assert "/_edge-site/site.css" in home.read_text(encoding="utf-8")
     os.environ.update(EDGE_SETTINGS=str(settings), EDGE_CONFIG=str(config), EDGE_SITE=temporary)
     import app
 
