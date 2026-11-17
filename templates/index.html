@@ -5,9 +5,6 @@
   <h1>مسیرهای اتصال</h1>
   <div class="summary"><bdi>{{ domain }}:443</bdi><span>{{ routes|length }} مسیر ثبت‌شده</span></div>
 </section>
-{% for category, message in get_flashed_messages(with_categories=true) %}
-<p class="message {{ category }}" role="{{ 'alert' if category == 'error' else 'status' }}">{{ message }}</p>
-{% endfor %}
 <section class="card" id="route-form">
   <h2>{{ 'ویرایش مسیر' if editing else 'افزودن مسیر' }}</h2>
   <form method="post" action="{{ url_for('change') }}" class="route-form">

@@ -9,7 +9,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: |
           sudo apt-get update
-          sudo apt-get install -y haproxy python3-flask
+          sudo apt-get install -y haproxy nginx gunicorn python3-flask
       - run: |
           bash -n install.sh
           bash -n deploy/edge-panel-cert
@@ -18,3 +18,4 @@ jobs:
           sudo visudo -cf deploy/edge-panel.sudoers
       - run: /usr/bin/python3 tests/panel_smoke.py
       - run: sudo /usr/bin/python3 tests/proxy_smoke.py
+      - run: /usr/bin/python3 tests/nginx_smoke.py

@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% block body %}
+<section class="hero"><h1>صفحات عمومی Nginx</h1></section>
+{% for key, page in pages.items() %}
+<section class="card">
+  <h2>{{ 'صفحهٔ API' if key == 'api' else 'صفحهٔ اصلی سایت' }}</h2>
+  <form method="post" class="stack">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    <input type="hidden" name="page" value="{{ key }}">
+    <label>عنوان<input name="title" value="{{ page.title }}" maxlength="100" required></label>
+    <label>متن صفحه<textarea name="body" rows="5" maxlength="1400" required>{{ page.body }}</textarea></label>
+    <div><button type="submit">ذخیرهٔ صفحه</button></div>
+  </form>
+</section>
+{% endfor %}
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block body %}
+<section class="hero"><h1>وضعیت سرویس‌ها</h1></section>
+<section class="card">
+  <dl class="service-list">
+    {% for label, state in status.items() %}
+      <dt>{{ label }}</dt><dd><bdi>{{ state }}</bdi></dd>
+    {% endfor %}
+  </dl>
+</section>
+<section class="card">
+  <h2>کانفیگ و گواهی</h2>
+  <form method="post" class="actions">
+    <input type="hidden" name="csrf" value="{{ csrf }}">
+    {% for key, label in operations.items() %}
+      <button class="quiet" type="submit" name="operation" value="{{ key }}">{{ label }}</button>
+    {% endfor %}
+  </form>
+</section>
+{% endblock %}
